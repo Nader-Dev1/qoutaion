@@ -200,10 +200,10 @@ table.items tr:hover td{background:#f5f8ff}
     <div class="grid3">
       <div><label>اسم العميل</label><input id="cl-name" value=""/></div>
       <div><label>جوال العميل</label><input id="cl-tel" value=""/></div>
-      <div><label>رقم العرض</label><input id="q-num" value="001"/></div>
+      <div><label>رقم العرض</label><input id="q-num" value=""/></div>
       <div><label>التاريخ</label><input id="q-date" type="date"/></div>
       <div><label>نسبة الضريبة %</label><input id="tax" type="number" value="15" min="0" max="100"/></div>
-      <div><label>العنوان</label><input id="validity" value=""/></div>
+      <div><label>العنوان</label><input id="cl-addr" value=""/></div>
     </div>
   </div>
 
@@ -362,6 +362,11 @@ function buildPQHtml(){
         <strong style="color:#1B4F8A;font-size:13px;display:block;margin-bottom:2px">رقم الجوال</strong>
         ${document.getElementById('cl-tel').value}
       </div>
+      <div style="font-size:12px;color:#2a3f5f">
+        <strong style="color:#1B4F8A;font-size:13px;display:block;margin-bottom:2px">العنوان</strong>
+        ${document.getElementById('cl-addr').value}
+      </div>
+    
     </div>
 
     <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px">
