@@ -120,10 +120,96 @@ table.items tr:hover td{background:#f5f8ff}
     text-align:center;
     gap:8px;
   }
-
   .dev-sep{
     display:none;
   }
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media(max-width:640px){
+  .app{padding:10px 10px 0}
+
+  /* Topbar */
+  .topbar{padding:14px 14px;gap:10px;border-radius:10px;margin-bottom:12px}
+  .topbar-text h1{font-size:14px}
+  .topbar-text p{font-size:11px}
+  .logo-box{width:42px;height:42px}
+  .logo-box span{font-size:12px}
+
+  /* Cards */
+  .card{padding:12px 12px;margin-bottom:10px}
+  .card-title{font-size:11px}
+
+  /* Grids → single column */
+  .grid2,.grid3{grid-template-columns:1fr}
+  .disc-grid{grid-template-columns:1fr}
+
+  /* Items table → card-style rows */
+  .items-wrap{overflow-x:visible}
+  table.items{min-width:unset;width:100%}
+  table.items thead{display:none}
+  table.items tbody tr{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    border:1px solid #e0e8f4;
+    border-radius:10px;
+    padding:10px;
+    margin-bottom:8px;
+    background:#fff;
+  }
+  table.items td{
+    padding:0;
+    border-bottom:none;
+    display:flex;
+    flex-direction:column;
+  }
+  /* البند / المنتج يأخذ السطر كله */
+  table.items td:nth-child(2){
+    grid-column:1/-1;
+  }
+  /* إخفاء رقم الصف */
+  table.items td.row-num{display:none}
+  /* الإجمالي والحذف في نفس السطر */
+  table.items td:nth-child(6){
+    align-items:flex-start;
+    justify-content:center;
+  }
+  table.items td:nth-child(7){
+    align-items:flex-end;
+    justify-content:center;
+  }
+  /* Label فوق كل input */
+  table.items td::before{
+    font-size:10px;
+    font-weight:700;
+    color:#1B4F8A;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+    margin-bottom:3px;
+    opacity:0.7;
+  }
+  table.items td:nth-child(3)::before{content:"الكمية"}
+  table.items td:nth-child(4)::before{content:"الوحدة"}
+  table.items td:nth-child(5)::before{content:"سعر الوحدة"}
+  table.items td:nth-child(6)::before{content:"الإجمالي"}
+  table.items td input{font-size:13px;padding:7px 9px}
+  .row-total{font-size:14px;padding-top:4px}
+
+  /* Totals box */
+  .totals-box{padding:10px 12px}
+  .t-row{font-size:12px}
+  .t-row.grand{font-size:14px}
+
+  /* Discount section */
+  .disc-section{padding:10px 12px}
+
+  /* Print button */
+  .btn-print{padding:13px 16px;font-size:13px}
+
+  /* Dev footer */
+  .dev-footer{margin:12px 10px 0;padding:12px 14px;font-size:14px}
+  .dev-footer strong{font-size:14px}
 }
 /* PDF content (hidden on screen) */
 #pdf-view{display:none}
