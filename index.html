@@ -34,7 +34,6 @@ table.items th{background:#1B4F8A;color:#fff;padding:9px 8px;text-align:right;fo
 table.items th:first-child,table.items th:last-child{text-align:center}
 table.items td{padding:5px 4px;border-bottom:1px solid #f0f4fa;vertical-align:middle}
 table.items td input{padding:5px 7px;font-size:12px;background:#fff}
-table.items tr:hover td{background:#f5f8ff}
 .row-num{text-align:center;color:#8a9ab0;font-size:11px;font-weight:600}
 .row-total{text-align:center;font-weight:700;color:#1B4F8A;font-size:13px;min-width:70px}
 .del-btn{background:none;border:none;cursor:pointer;color:#E24B4A;font-size:14px;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center}
@@ -147,85 +146,8 @@ table.items tr:hover td{background:#f5f8ff}
   label{font-size:10px}
   input,select,textarea{font-size:12px;padding:7px 9px}
 
-  /* Items table → بطاقات بتصميم احترافي */
-  .items-wrap{overflow-x:visible}
-  table.items{min-width:unset;width:100%}
-  table.items thead{display:none}
-  table.items tbody tr{
-    display:block;
-    border:1.5px solid #d0dff0;
-    border-radius:12px;
-    margin-bottom:10px;
-    background:#fff;
-    overflow:hidden;
-    box-shadow:0 2px 8px rgba(27,79,138,.07);
-  }
-  /* شريط رقم البند */
-  table.items td.row-num{
-    display:block;
-    background:#1B4F8A;
-    color:#fff;
-    font-size:11px;
-    font-weight:700;
-    padding:5px 12px;
-    text-align:right;
-  }
-  table.items td.row-num::before{content:"البند رقم "}
-  /* اسم البند */
-  table.items td:nth-child(2){
-    display:block;
-    padding:10px 12px 8px;
-    border-bottom:1px solid #f0f4fa;
-  }
-  table.items td:nth-child(2) input{font-size:13px;font-weight:600}
-  /* الكمية والوحدة والسعر في سطر واحد */
-  table.items td:nth-child(3),
-  table.items td:nth-child(4),
-  table.items td:nth-child(5){
-    display:inline-block;
-    width:33.33%;
-    padding:8px 6px 4px;
-    vertical-align:top;
-    box-sizing:border-box;
-  }
-  table.items td:nth-child(3)::before,
-  table.items td:nth-child(4)::before,
-  table.items td:nth-child(5)::before{
-    display:block;
-    font-size:9px;
-    font-weight:700;
-    color:#8a9ab0;
-    text-transform:uppercase;
-    margin-bottom:3px;
-  }
-  table.items td:nth-child(3)::before{content:"الكمية"}
-  table.items td:nth-child(4)::before{content:"الوحدة"}
-  table.items td:nth-child(5)::before{content:"السعر"}
-  table.items td:nth-child(3) input,
-  table.items td:nth-child(4) input,
-  table.items td:nth-child(5) input{font-size:12px;padding:5px 6px}
-  /* الإجمالي وزر الحذف */
-  table.items td:nth-child(6),
-  table.items td:nth-child(7){
-    display:inline-block;
-    vertical-align:middle;
-    border-top:1px solid #f0f4fa;
-    padding:7px 12px;
-  }
-  table.items td:nth-child(6){
-    width:calc(100% - 50px);
-    font-size:14px;
-    font-weight:800;
-    color:#1B4F8A;
-  }
-  table.items td:nth-child(6)::before{
-    display:inline;
-    content:"الإجمالي: ";
-    font-size:11px;
-    font-weight:600;
-    color:#8a9ab0;
-  }
-  table.items td:nth-child(7){width:50px;text-align:left}
+  /* Items table → scroll أفقي على الموبايل */
+  .items-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 
   /* Totals box */
   .totals-box{padding:10px 12px}
@@ -345,9 +267,15 @@ table.items tr:hover td{background:#f5f8ff}
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7" style="padding:6px 4px 4px">
+              <button class="add-row-btn" onclick="addRow()"><i class="ti ti-plus"></i> إضافة بند جديد</button>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
-    <button class="add-row-btn" onclick="addRow()"><i class="ti ti-plus"></i> إضافة بند جديد</button>
 
     <div class="disc-section">
       <div class="disc-title"><i class="ti ti-discount-2"></i> الخصومات</div>
