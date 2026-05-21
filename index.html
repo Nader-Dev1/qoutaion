@@ -48,6 +48,11 @@ table.items tr:hover td{background:#f5f8ff}
 .t-row.grand{border-top:2px solid #1B4F8A;margin-top:6px;padding-top:10px;font-size:16px;font-weight:800;color:#1B4F8A}
 .t-row.grand .val{color:#C8922A}
 .t-row.tax-row .val{color:#C8922A}
+.t-row.disc-row .val{color:#E24B4A}
+.disc-section{background:#fef9f0;border:1px solid #f0d890;border-radius:10px;padding:12px 16px;margin-top:14px}
+.disc-section .disc-title{font-size:11px;font-weight:700;color:#C8922A;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.disc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.disc-badge{display:inline-block;background:#C8922A;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-right:4px}
 
 .btn-print{background:#1B4F8A;color:#fff;border:none;padding:13px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;letter-spacing:.3px;transition:.2s}
 .btn-print:hover{background:#15397a}
@@ -226,8 +231,27 @@ table.items tr:hover td{background:#f5f8ff}
       </table>
     </div>
     <button class="add-row-btn" onclick="addRow()"><i class="ti ti-plus"></i> إضافة بند جديد</button>
+
+    <div class="disc-section">
+      <div class="disc-title"><i class="ti ti-discount-2"></i> الخصومات</div>
+      <div class="disc-grid">
+        <div>
+          <label>خصم بنسبة %</label>
+          <input id="disc-pct" type="number" value="0" min="0" max="100" step="0.01" oninput="calcTotals()"/>
+        </div>
+        <div>
+          <label>خصم بمبلغ ثابت (ر.س)</label>
+          <input id="disc-amt" type="number" value="0" min="0" step="0.01" oninput="calcTotals()"/>
+        </div>
+      </div>
+    </div>
+
     <div class="totals-box" style="margin-top:14px">
-      <div class="t-row"><span class="lbl">المجموع قبل الضريبة</span><span id="s-sub">0.00 ر.س</span></div>
+      <div class="t-row"><span class="lbl">المجموع قبل الخصم</span><span id="s-sub">0.00 ر.س</span></div>
+      <div class="t-row disc-row" id="row-disc-pct" style="display:none"><span class="lbl">خصم النسبة <span class="disc-badge" id="lbl-disc-pct">0%</span></span><span class="val" id="s-disc-pct">- 0.00 ر.س</span></div>
+      <div class="t-row disc-row" id="row-disc-amt" style="display:none"><span class="lbl">خصم المبلغ الثابت</span><span class="val" id="s-disc-amt">- 0.00 ر.س</span></div>
+      <div class="t-row disc-row" id="row-disc-total" style="display:none"><span class="lbl" style="font-weight:700">إجمالي الخصم</span><span class="val" id="s-disc-total">- 0.00 ر.س</span></div>
+      <div class="t-row" id="row-after-disc" style="display:none"><span class="lbl">المجموع بعد الخصم</span><span id="s-after-disc">0.00 ر.س</span></div>
       <div class="t-row tax-row"><span class="lbl" id="s-tax-lbl">ضريبة القيمة المضافة 15%</span><span class="val" id="s-tax">0.00 ر.س</span></div>
       <div class="t-row grand"><span>الإجمالي النهائي</span><span class="val" id="s-grand">0.00 ر.س</span></div>
     </div>
@@ -282,11 +306,30 @@ function fmt(n){return (+n||0).toLocaleString('ar-SA',{minimumFractionDigits:2,m
 function calcTotals(){
   const sub=rows.reduce((s,r)=>s+(+r.qty||0)*(+r.price||0),0);
   const tp=+document.getElementById('tax').value||0;
-  const tax=sub*tp/100;
+  const discPct=Math.max(0,Math.min(100,+document.getElementById('disc-pct').value||0));
+  const discAmt=Math.max(0,+document.getElementById('disc-amt').value||0);
+  const dPctVal=sub*(discPct/100);
+  const afterPct=sub-dPctVal;
+  const dAmtVal=Math.min(discAmt,afterPct);
+  const afterDisc=afterPct-dAmtVal;
+  const tax=afterDisc*tp/100;
+  const grand=afterDisc+tax;
+  const totalDisc=dPctVal+dAmtVal;
+  const showPct=discPct>0;
+  const showAmt=discAmt>0;
+  const showAny=showPct||showAmt;
   document.getElementById('s-sub').textContent=fmt(sub)+' ر.س';
   document.getElementById('s-tax-lbl').textContent='ضريبة القيمة المضافة '+tp+'%';
   document.getElementById('s-tax').textContent=fmt(tax)+' ر.س';
-  document.getElementById('s-grand').textContent=fmt(sub+tax)+' ر.س';
+  document.getElementById('s-grand').textContent=fmt(grand)+' ر.س';
+  document.getElementById('row-disc-pct').style.display=showPct?'flex':'none';
+  document.getElementById('row-disc-amt').style.display=showAmt?'flex':'none';
+  document.getElementById('row-disc-total').style.display=(showPct&&showAmt)?'flex':'none';
+  document.getElementById('row-after-disc').style.display=showAny?'flex':'none';
+  if(showPct){document.getElementById('lbl-disc-pct').textContent=discPct+'%';document.getElementById('s-disc-pct').textContent='- '+fmt(dPctVal)+' ر.س';}
+  if(showAmt){document.getElementById('s-disc-amt').textContent='- '+fmt(dAmtVal)+' ر.س';}
+  if(showPct&&showAmt){document.getElementById('s-disc-total').textContent='- '+fmt(totalDisc)+' ر.س';}
+  document.getElementById('s-after-disc').textContent=fmt(afterDisc)+' ر.س';
   document.querySelectorAll('.row-total').forEach((el,i)=>{
     if(rows[i])el.textContent=fmt((+rows[i].qty||0)*(+rows[i].price||0))+' ر.س';
   });
@@ -318,8 +361,18 @@ function fmtDate(s){
 function buildPQHtml(){
   const sub=rows.reduce((s,r)=>s+(+r.qty||0)*(+r.price||0),0);
   const tp=+document.getElementById('tax').value||0;
-  const tax=sub*tp/100;
-  const grand=sub+tax;
+  const discPct=Math.max(0,Math.min(100,+document.getElementById('disc-pct').value||0));
+  const discAmt=Math.max(0,+document.getElementById('disc-amt').value||0);
+  const dPctVal=sub*(discPct/100);
+  const afterPct=sub-dPctVal;
+  const dAmtVal=Math.min(discAmt,afterPct);
+  const afterDisc=afterPct-dAmtVal;
+  const totalDisc=dPctVal+dAmtVal;
+  const tax=afterDisc*tp/100;
+  const grand=afterDisc+tax;
+  const showPct=discPct>0;
+  const showAmt=discAmt>0;
+  const showAny=showPct||showAmt;
   const termsLines=document.getElementById('terms').value.split('\n').filter(l=>l.trim()).map(l=>`<p style="font-size:11px;color:#4a4020;line-height:1.9">${l}</p>`).join('');
   const itemRows=rows.map((r,i)=>`
     <tr>
@@ -330,6 +383,13 @@ function buildPQHtml(){
       <td style="text-align:center;padding:9px 12px;border-bottom:1px solid #e8eef8;font-weight:700;color:${BRAND}">${fmt((+r.qty||0)*(+r.price||0))} ر.س</td>
     </tr>
   `).join('');
+
+  const discRows=`
+    ${showPct?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:#E24B4A"><span style="color:#5a7090">خصم النسبة <span style="background:#C8922A;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px">${discPct}%</span></span><span style="font-weight:700">- ${fmt(dPctVal)} ر.س</span></div>`:''}
+    ${showAmt?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:#E24B4A"><span style="color:#5a7090">خصم المبلغ الثابت</span><span style="font-weight:700">- ${fmt(dAmtVal)} ر.س</span></div>`:''}
+    ${showPct&&showAmt?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:#E24B4A;font-weight:700"><span>إجمالي الخصم</span><span>- ${fmt(totalDisc)} ر.س</span></div>`:''}
+    ${showAny?`<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:#2a3f5f"><span style="color:#5a7090">المجموع بعد الخصم</span><span style="font-weight:700">${fmt(afterDisc)} ر.س</span></div>`:''}
+  `;
 
   return `
   <div style="font-family:'Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;width:750px;padding:28px 32px;color:#1a2740;background:#fff">
@@ -349,7 +409,6 @@ function buildPQHtml(){
         <h3 style="font-size:15px;font-weight:800;margin-bottom:6px;letter-spacing:1px">عرض سعر</h3>
         <div style="background:#C8922A;color:#fff;padding:2px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;margin-bottom:4px">رقم ${document.getElementById('q-num').value}</div>
         <p style="font-size:11px;opacity:.85;line-height:1.6">التاريخ: ${fmtDate(document.getElementById('q-date').value)}</p>
-        
       </div>
     </div>
 
@@ -366,7 +425,6 @@ function buildPQHtml(){
         <strong style="color:#1B4F8A;font-size:13px;display:block;margin-bottom:2px">العنوان</strong>
         ${document.getElementById('cl-addr').value}
       </div>
-    
     </div>
 
     <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px">
@@ -390,9 +448,10 @@ function buildPQHtml(){
       <div style="width:240px;flex-shrink:0">
         <div style="background:#f0f6ff;border:1px solid #d0dff0;border-radius:10px;padding:14px 16px">
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:#2a3f5f">
-            <span style="color:#5a7090;font-size:12px">الإجمالي قبل الضريبة</span>
+            <span style="color:#5a7090;font-size:12px">${showAny?'المجموع قبل الخصم':'الإجمالي قبل الضريبة'}</span>
             <span style="font-weight:700">${fmt(sub)} ر.س</span>
           </div>
+          ${discRows}
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:${GOLD}">
             <span style="font-size:12px">ضريبة ${tp}%</span>
             <span style="font-weight:700">${fmt(tax)} ر.س</span>
